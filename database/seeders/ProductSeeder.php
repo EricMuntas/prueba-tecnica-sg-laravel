@@ -17,5 +17,13 @@ class ProductSeeder extends Seeder
             'name' => 'Manzana',
             'description' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Labore sed saepe voluptatum enim nostrum tempora rerum amet, error soluta corporis provident repudiandae quia praesentium. Voluptatibus doloremque ex ipsam deserunt hic',
         ]);
+        $product2 = Product::create([
+            'name' => 'Lechuga',
+            'description' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Labore sed saepe voluptatum enim nostrum tempora rerum amet, error soluta corporis provident repudiandae quia praesentium. Voluptatibus doloremque ex ipsam deserunt hic',
+        ]);
+        $product3 = Product::create([
+            'name' => 'Pera',
+            'description' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Labore sed saepe voluptatum enim nostrum tempora rerum amet, error soluta corporis provident repudiandae quia praesentium. Voluptatibus doloremque ex ipsam deserunt hic',
+        ]);
     }
 }
