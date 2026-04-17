@@ -1,1 +1,38 @@
 @import 'bootstrap/scss/bootstrap';
+
+
+.nav-link {
+    @extend .text-dark;
+    @extend .w-100;
+    @extend .h-100;
+    @extend .d-flex;
+    @extend .justify-content-center;
+    @extend .align-items-center;
+      &:hover {
+    background-color: $dark; // azul de Bootstrap
+    @extend .text-primary;
+  }
+}
+
+    /* Spinner base */
+    .spinner {
+        width: 40px;
+        /* cámbialo al tamaño que quieras */
+        height: 40px;
+        border-radius: 50%;
+        border: 4px solid #e5e7eb;
+        /* pista (track) */
+        border-top-color: #3b82f6;
+        /* arco animado */
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }

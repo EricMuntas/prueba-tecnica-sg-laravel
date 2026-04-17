@@ -30,6 +30,7 @@ class SubcategoryController extends Controller
         ]);
 
         $subcategory = Subcategory::create([
+            'category_id' => $validated['category_id'],
             'name' => $validated['name'],
             'description' => $validated['description'],
         ]);

@@ -6,8 +6,9 @@
     </head>
     <body>
 <div>
-    @yield('content')
     <x-navbar></x-navbar>
+    @yield('content')
+   
 </div>
 
     </body>

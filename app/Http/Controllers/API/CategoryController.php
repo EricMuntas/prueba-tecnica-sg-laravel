@@ -33,7 +33,7 @@ class CategoryController extends Controller
             'description' => $validated['description'],
         ]);
 
-        return response()->json($category, 200);
+        return response()->json($category, 201);
     }
 
     /**
