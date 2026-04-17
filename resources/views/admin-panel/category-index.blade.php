@@ -3,7 +3,7 @@
 @section('content')
     <x-link url="/admin" text="Go to admin panel"></x-link>
     <x-link url="/admin/subcategories" text="Subcategories"></x-link>
-    <x-link url="/admin/categories-create" text="CREATE CATEGORY"></x-link>
+    <x-link url="/admin/categories/create" text="CREATE CATEGORY"></x-link>
     <br>
     <div id="categories-container">
         <p>Cargando categorias...</p>
@@ -17,10 +17,11 @@
 
                 console.log(categories);
 
-                container.innerHTML = categories.map(c => `
+                container.innerHTML = categories.map(category => `
                 <div>
-                    <a href="#">${c.name}</a>
-                    <p>${c.description}</p>
+                    <a href="#">${category.name}</a>
+                    <p>${category.description}</p>
+                    <button onclick="deleteItem('category', ${category.id})">Borrar</button>
                 </div>
             `).join('');
             })

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Subcategory extends Model
 {
@@ -13,4 +14,9 @@ class Subcategory extends Model
         'name',
         'description',
     ];
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class)->select(['id', 'name']);
+    }
 }

@@ -3,7 +3,7 @@
 @section('content')
     <x-link url="/admin" text="Go to admin panel"></x-link>
     <x-link url="/admin/categories" text="Categories"></x-link>
-    <x-link url="/admin/categories-create" text="CREATE SUBCATEGORY"></x-link>
+    <x-link url="/admin/categories/create" text="CREATE SUBCATEGORY"></x-link>
     <br>
     <div id="subcategories-container">
         <p>Cargando subcategorias...</p>
@@ -21,7 +21,9 @@
                 <div>
                     <a href="#">${subcategory.name}</a>
                     <p>${subcategory.description}</p>
-                    <p>Category ID: ${subcategory.category_id}</p>
+                    <p>Categoria: ${subcategory.category.name}</p>
+                    
+                    <button onclick="deleteItem('subcategory', ${subcategory.id})">Borrar</button>
                 </div>
             `).join('');
             })
