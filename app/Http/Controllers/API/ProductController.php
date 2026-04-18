@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\Fee;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -25,10 +26,13 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'        => 'required|string|max:30',
+            'name'  => 'required|string|max:30',
             'description' => 'required|string|max:255',
-            'photos'      => 'nullable|array|max:3',
-            'photos.*'    => 'image|mimes:jpg,jpeg,png,webp|max:2048',
+            'photos' => 'nullable|array|max:3',
+            'photos.*' => 'image|mimes:jpg,jpeg,png,webp|max:2048',
+            'start_day' => 'required|date',
+            'end_day' => 'required|date',
+            'price' => 'required|numeric',
         ]);
 
         // Subir fotos (máximo 3)
@@ -62,6 +66,13 @@ class ProductController extends Controller
             $product->subcategories()->sync(array_filter((array) $subcategoryIds));
         }
 
+        $fee = Fee::create([
+            'product_id' => $product->id,
+            'start_day' => $request->start_day,
+            'end_day' => $request->end_day,
+            'price' => $request->price,
+        ]);
+
         return response()->json($product->load('categories', 'subcategories'), 201);
     }
 
@@ -70,7 +81,7 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        $product = Product::with('categories', 'subcategories')->find($id);
+        $product = Product::with('categories', 'subcategories', 'fees')->find($id);
 
         if (!$product) {
             return response()->json(['message' => 'Producto no encontrado.'], 404);

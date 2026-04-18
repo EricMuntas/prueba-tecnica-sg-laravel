@@ -45,8 +45,7 @@ class FeeController extends Controller
      */
     public function show(string $id)
     {
-        $fee = Fee::find($id);
-
+        $fee = Fee::with('product')->find($id);
         return response()->json($fee, 200);
     }
 
@@ -56,16 +55,14 @@ class FeeController extends Controller
     public function update(Request $request, string $id)
     {
         $validated = $request->validate([
-            'product_id' => 'integer',
             'start_day' => 'date',
             'end_day' => 'date',
-            'price' => 'number',
+            'price' => 'numeric',
         ]);
 
         $fee = Fee::find($id);
 
         $fee->update([
-            'product_id' => $validated['product_id'],
             'start_day' => $validated['start_day'],
             'end_day' => $validated['end_day'],
             'price' => $validated['price'],

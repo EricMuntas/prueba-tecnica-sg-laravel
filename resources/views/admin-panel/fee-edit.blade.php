@@ -5,49 +5,67 @@
         <x-link url="/admin" text="Go to admin panel"></x-link>
         <x-link url="/admin/products" text="go back"></x-link>
 
-        <div id="products-container">
+        <div id="product-container">
             <p>Cargando producto...</p>
+            <x-loader></x-loader>
         </div>
 
         <div id="loader" style="display: none;">
             <x-loader></x-loader>
         </div>
 
-        <form id="productForm">
+        <form id="feeForm">
             @csrf
-            <input id="form-name" type="text" name="name" placeholder="Nombre" />
-            <input id="form-description" type="text" name="description" placeholder="Descripción" />
+            <input id="form-price" type="number" min="0" step="0.01" name="price" placeholder="0" />
+            <input id="form-start-day" type="date" name="start_day" />
+            <input id="form-end-day" type="date" name="end_day" />
 
 
             <button type="submit">Actualizar</button>
         </form>
 
         <div id="deleteBtnContainer"></div>
-        <x-link url="/admin/products/{{ $id }}/fees" text="Ver fees"></x-link>
+        {{-- <x-link url="/admin/products/{{ $id }}/fees" text="Ver fees"></x-link> --}}
 
         <script>
-            const productId = @json($id);
+            const feeId = @json($id);
             const deleteBtnContainer = document.getElementById('deleteBtnContainer');
+            const productContainer = document.getElementById('product-container');
 
-            deleteBtnContainer.innerHTML = `<button onclick="deleteItem('product', ${productId})">Borrar</button>`;
+            deleteBtnContainer.innerHTML = `<button onclick="deleteItem('fee', ${feeId})">Borrar</button>`;
 
             // get data para presvisualizar los datos
-            fetch('/api/products/' + productId)
+            fetch('/api/fees/' + feeId)
                 .then(res => res.json())
-                .then(product => {
+                .then(fee => {
 
-                    let formName = document.getElementById('form-name');
-                    formName.value = product.name;
+                    console.log(fee);
 
-                    let formDescription = document.getElementById('form-description');
-                    formDescription.value = product.description;
+                    let formPrice = document.getElementById('form-price');
+                    formPrice.value = fee.price;
+
+                    let formStartDay = document.getElementById('form-start-day');
+                    formStartDay.value = fee.start_day;
+
+                    let formEndDay = document.getElementById('form-end-day');
+                    formEndDay.value = fee.end_day;
+
+                    productContainer.innerHTML = `
+                    <div>
+                        <p>Producto asociado:</p>
+                        <a href="/admin/products/${fee.product.id}">${fee.product.name}</a>
+                        <p>${fee.product.description}</p>
+                        </div>
+                    `
+
+
 
                 })
                 .catch(err => console.error('Error:', err));
 
 
 
-            const form = document.getElementById('productForm');
+            const form = document.getElementById('feeForm');
 
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
@@ -61,7 +79,7 @@
 
                 console.log(formData);
 
-                const response = await fetch(`/api/products/${productId}`, {
+                const response = await fetch(`/api/fees/${feeId}`, {
                     method: 'POST', // Usamos POST aquí
                     headers: {
                         'X-CSRF-TOKEN': formData.get('_token'),
@@ -74,7 +92,7 @@
                 console.log(data);
 
                 if (response.ok) {
-                    alert('Producto actualizado!');
+                    alert('Tarifa actualizado!');
                     window.location.href = '/admin/products';
                 } else {
                     alert('Error al actualizar: ' + (data.message || 'Verifica los datos.'));

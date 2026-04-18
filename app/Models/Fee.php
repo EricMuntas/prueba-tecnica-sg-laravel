@@ -14,4 +14,9 @@ class Fee extends Model
         'end_day',
         'price',
     ];
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
 }

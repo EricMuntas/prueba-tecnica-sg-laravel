@@ -37,7 +37,21 @@
                 <div id="added-subcategories-container" class="d-flex gap-2 flex-wrap"></div>
             </div>
 
-            <!-- Fotos (máximo 3) -->
+            <div>
+                <span>Tarifa inicial:</span>
+                <div>
+                    <label for="start_day">Dia inicial:</label>
+                    <input type="date" name="start_day" />
+                </div>
+                <div>
+                    <label for="end_day">Dia final:</label>
+                    <input type="date" name="end_day" />
+                </div>
+                <div>
+                    <label for="price">Precio:</label>
+                    <input type="number" name="price" min="0" placeholder="0" />
+                </div>
+            </div>
             <div>
                 <label for="photo-input">Fotos del producto (máx. 3):</label>
                 <input type="file" id="photo-input" accept="image/jpg,image/jpeg,image/png,image/webp" multiple />
@@ -161,14 +175,13 @@
                 updateAssignedSubcategoriesScreen();
             });
 
-            // ── Lógica de fotos ────────────────────────────────────────────
-            const photoInput        = document.getElementById('photo-input');
-            const photoPreview      = document.getElementById('photo-preview-container');
-            const photoCountMsg     = document.getElementById('photo-count-msg');
-            const MAX_PHOTOS        = 3;
-            let selectedFiles       = []; // Array de File objects seleccionados
+            const photoInput = document.getElementById('photo-input');
+            const photoPreview = document.getElementById('photo-preview-container');
+            const photoCountMsg = document.getElementById('photo-count-msg');
+            const MAX_PHOTOS = 3;
+            let selectedFiles = []; // Array de File objects seleccionados
 
-            photoInput.addEventListener('change', function () {
+            photoInput.addEventListener('change', function() {
                 const newFiles = Array.from(this.files);
 
                 // Añadir solo hasta llegar al límite
@@ -198,7 +211,8 @@
                     reader.onload = (e) => {
                         const wrapper = document.createElement('div');
                         wrapper.style.cssText = 'position:relative;display:inline-block;';
-                        wrapper.innerHTML = `
+                        wrapper.innerHTML =
+                            `
                             <img src="${e.target.result}" style="width:100px;height:100px;object-fit:cover;border-radius:8px;border:1px solid #ccc;" />
                             <span data-index="${index}" class="remove-photo"
                                 style="position:absolute;top:-6px;right:-6px;background:#dc3545;color:#fff;
@@ -218,17 +232,16 @@
                 renderPhotoPreviews();
             });
 
-            // ── Submit del formulario ──────────────────────────────────────
             const loader = document.getElementById('loader');
-            const form   = document.getElementById('productForm');
+            const form = document.getElementById('productForm');
 
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 loader.style.display = 'block';
-                form.style.display   = 'none';
+                form.style.display = 'none';
 
                 const formData = new FormData(this);
-                formData.append('categories',    JSON.stringify(assignedCategoriesId));
+                formData.append('categories', JSON.stringify(assignedCategoriesId));
                 formData.append('subcategories', JSON.stringify(assignedSubcategoriesId));
 
                 // Añadir cada foto individualmente como 'photos[]'
@@ -250,7 +263,7 @@
                     console.error('Error:', err);
                     alert('Error al crear el producto: ' + JSON.stringify(err.errors ?? err.message));
                     loader.style.display = 'none';
-                    form.style.display   = 'block';
+                    form.style.display = 'block';
                 }
             });
         </script>

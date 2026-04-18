@@ -25,3 +25,6 @@ Route::get('/admin/categories/{id}', [AdminPageController::class, 'categoriesEdi
 Route::get('/admin/products', [AdminPageController::class, 'productIndex']);
 Route::get('/admin/products/create', [AdminPageController::class, 'productCreateIndex']);
 Route::get('/admin/products/{id}', [AdminPageController::class, 'productEditIndex']);
+
+Route::get('/admin/products/{id}/fees', [AdminPageController::class, 'productFeesIndex']);
+Route::get('/admin/fees/{id}', [AdminPageController::class, 'feeEditIndex']);
