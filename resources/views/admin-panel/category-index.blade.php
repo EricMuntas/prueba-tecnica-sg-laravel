@@ -21,7 +21,7 @@
                 <div>
                     <a href="#">${category.name}</a>
                     <p>${category.description}</p>
-                    <button onclick="deleteItem('category', ${category.id})">Borrar</button>
+                    <a href="/admin/categories/${category.id}">editar</a>
                 </div>
             `).join('');
             })

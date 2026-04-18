@@ -13,4 +13,17 @@ class Product extends Model
         'description',
         'photo_url',
     ];
+
+    protected $casts = [
+        'photo_url' => 'array',
+    ];
+
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class);
+    }
+    public function subcategories()
+    {
+        return $this->belongsToMany(Subcategory::class);
+    }
 }

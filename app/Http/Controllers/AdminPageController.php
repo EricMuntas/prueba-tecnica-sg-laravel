@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Subcategory;
 use Illuminate\Http\Request;
 
 class AdminPageController extends Controller
@@ -46,5 +47,28 @@ class AdminPageController extends Controller
         $categories = Category::all();
 
         return view('admin-panel.category-create', ['categories' => $categories]);
+    }
+
+    public function categoriesEditIndex(int $id)
+    {
+        // Obtener categorias por si el user quiere hacer una subcategory
+        $categories = Category::all();
+
+        return view('admin-panel.category-edit', ['id' => $id, 'categories' => $categories]);
+    }
+
+
+
+    public function productCreateIndex()
+    {
+
+        return view('admin-panel.product-create');
+    }
+    public function productEditIndex(int $id)
+    {
+        // Obtener categorias por si el user quiere hacer una subcategory
+        // $categories = Category::all();
+
+        return view('admin-panel.product-edit', ['id' => $id]);
     }
 }

@@ -26,13 +26,15 @@
 
 
         <script>
-            const productId = @json($id);
+            const categoryId = @json($id);
+
             const deleteBtnContainer = document.getElementById('deleteBtnContainer');
 
-            deleteBtnContainer.innerHTML = `<button onclick="deleteItem('product', ${productId})">Borrar</button>`;
+            deleteBtnContainer.innerHTML = ` <button onclick="deleteItem('category', ${categoryId})">Borrar</button>`;
+
 
             // get data para presvisualizar los datos
-            fetch('/api/products/' + productId)
+            fetch('/api/categories/' + categoryId)
                 .then(res => res.json())
                 .then(product => {
 
@@ -61,7 +63,7 @@
 
                 console.log(formData);
 
-                const response = await fetch(`/api/products/${productId}`, {
+                const response = await fetch(`/api/products/${categoryId}`, {
                     method: 'POST', // Usamos POST aquí
                     headers: {
                         'X-CSRF-TOKEN': formData.get('_token'),

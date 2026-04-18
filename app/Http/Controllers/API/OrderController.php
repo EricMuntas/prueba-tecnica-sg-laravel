@@ -61,11 +61,7 @@ class OrderController extends Controller
 
         $order = Order::find($id);
 
-        $order->update([
-            'user_id' => $validated['user_id'],
-            'date' => $validated['date'],
-            'cost' => $validated['cost'],
-        ]);
+        $order->update($validated);
 
         return response()->json($order, 200);
     }

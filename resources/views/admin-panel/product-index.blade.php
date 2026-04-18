@@ -2,10 +2,10 @@
 
 @section('content')
     <x-link url="/admin" text="Go to admin panel"></x-link>
-    <x-link url="/admin/product-create" text="CREATE PRODUCT"></x-link>
+    <x-link url="/admin/products/create" text="CREATE PRODUCT"></x-link>
     <br>
     <div id="product-container">
-        <p>Cargando subcategorias...</p>
+        <p>Cargando productos...</p>
     </div>
 
     <script>
@@ -21,8 +21,7 @@
                     <a href="#">${product.name}</a>
                     <p>${product.description}</p>
                     
-                    <button onclick="deleteItem('product', ${product.id})">Borrar</button>
-                    <a href="#">editar</a>
+                    <a href="/admin/products/${product.id}">editar</a>
                 </div>
             `).join('');
             })
