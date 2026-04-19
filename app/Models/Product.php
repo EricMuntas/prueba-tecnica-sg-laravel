@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
@@ -29,6 +30,15 @@ class Product extends Model
 
     public function fees()
     {
-        return $this->hasMany(Fee::class);
+        return $this->hasMany(Fee::class)->orderBy('id', 'DESC');
+    }
+
+    public function currentFee()
+    {
+        $currentDate = Carbon::now()->toDateString();
+
+        return $this->hasOne(Fee::class)
+            ->where('start_day', '<=', $currentDate)
+            ->where('end_day', '>=', $currentDate);
     }
 }

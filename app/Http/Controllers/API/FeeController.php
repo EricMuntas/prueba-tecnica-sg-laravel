@@ -27,8 +27,12 @@ class FeeController extends Controller
             'product_id' => 'required|integer',
             'start_day' => 'required|date',
             'end_day' => 'required|date',
-            'price' => 'required|number',
+            'price' => 'required|numeric',
         ]);
+
+        if (Fee::where('start_day', '<=', $validated['start_day'])->where('end_day', '>=', $validated['start_day'])) {
+            return response()->json(['message' => 'Ya existe una tarifa en esta fecha para este producto.'], 403);
+        }
 
         $fee = Fee::create([
             'product_id' => $validated['product_id'],
