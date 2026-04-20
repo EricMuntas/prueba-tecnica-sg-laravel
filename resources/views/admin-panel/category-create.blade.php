@@ -28,7 +28,7 @@
 
             </div>
 
-
+            <p id="error-message-container"></p>
             <button type="submit">Enviar</button>
         </form>
 
@@ -64,9 +64,24 @@
                 loader.style.display = 'block';
                 form.style.display = 'none';
 
+
                 const formData = new FormData(this);
 
-                console.log(formData);
+
+                if (formData.get('name').trim() == '') {
+                    sendErrorMessage('nombre');
+                    return;
+                }
+
+                if (formData.get('description').trim() == '') {
+                    sendErrorMessage('descripción');
+                    return;
+                }
+
+                if (formData.get('is-subcategory') == 'on' && formData.get('category_id').trim() == '') {
+                    sendErrorMessage('subcategoría');
+                    return;
+                }
 
                 const response = await fetch(api_url, {
                     method: 'POST',
@@ -78,13 +93,24 @@
                 });
 
                 const data = await response.json();
-                console.log(data);
 
                 window.location.href = is_subcategory ? "/admin/subcategories" : "/admin/categories";
 
                 loader.style.display = 'none';
                 form.style.display = 'block';
             });
+
+
+            const sendErrorMessage = (field) => {
+
+                loader.style.display = 'none';
+                form.style.display = 'block';
+
+                const errorMessageContainer = document.getElementById('error-message-container');
+                const errorMessage = 'No puedes dejar el campo ' + field + ' vacío.';
+
+                errorMessageContainer.innerHTML = errorMessage;
+            }
         </script>
     </div>
 @endsection

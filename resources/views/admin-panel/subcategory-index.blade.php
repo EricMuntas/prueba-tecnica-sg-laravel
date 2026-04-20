@@ -22,9 +22,9 @@
                     <a href="#">${subcategory.name}</a>
                     <p>${subcategory.description}</p>
                     <p>Categoria: ${subcategory.category.name}</p>
-                    
-                    <button onclick="deleteItem('subcategory', ${subcategory.id})">Borrar</button>
                 </div>
+
+                <a href="/admin/subcategories/${subcategory.id}">edit</a>
             `).join('');
             })
             .catch(err => console.error('Error:', err));

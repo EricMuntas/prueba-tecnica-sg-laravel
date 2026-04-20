@@ -19,12 +19,17 @@ window.confirmDelete = function() {
     const { type, id } = itemToDelete;
     if (!type || !id) return;
 
-    // Mapea el tipo al endpoint de API correspondiente
     const endpoints = {
         product:     `/api/products/${id}`,
         category:    `/api/categories/${id}`,
         subcategory: `/api/subcategories/${id}`,
     };
+
+    const redirectTo = {
+        product:     `/admin/products/`,
+        category:    `/admin/categories/`,
+        subcategory: `/admin/subcategories/`, 
+    }
 
     const url = endpoints[type];
     if (!url) {
@@ -47,7 +52,8 @@ window.confirmDelete = function() {
         itemToDelete = { type: null, id: null };
 
         if (res.ok) {
-            window.location.reload();
+            // window.location.reload();
+            window.location.href = redirectTo[type];
         } else {
             return res.json().then(data => {
                 alert('Error al eliminar: ' + (data.message || 'Error desconocido'));

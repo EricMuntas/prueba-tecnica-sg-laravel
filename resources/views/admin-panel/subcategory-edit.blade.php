@@ -18,6 +18,15 @@
             <input id="form-name" type="text" name="name" placeholder="Nombre" />
             <input id="form-description" type="text" name="description" placeholder="Descripción" />
 
+
+            <div class="categories-container">
+                <label for="categories-select">Asignar categoría:</label>
+                <select id="categories-select" name="category_id">
+                    <option value="">Categoría...</option>
+                </select>
+            </div>
+
+
             <p id="error-message-container"></p>
 
             <button type="submit">Actualizar</button>
@@ -28,27 +37,40 @@
 
 
         <script>
-            const categoryId = @json($id);
+            const subcategoryId = @json($id);
+            let thisCategory = '';
 
             const deleteBtnContainer = document.getElementById('deleteBtnContainer');
 
-            deleteBtnContainer.innerHTML = ` <button onclick="deleteItem('category', ${categoryId})">Borrar</button>`;
+            deleteBtnContainer.innerHTML = ` <button onclick="deleteItem('subcategory', ${subcategoryId})">Borrar</button>`;
 
+            // let thisSubcategoryData = null;
+            let allCategories = [];
+            const categoriesSelect = document.getElementById('categories-select')
 
-            // get data para presvisualizar los datos
-            fetch('/api/categories/' + categoryId)
-                .then(res => res.json())
-                .then(product => {
+            const fetchSubcategory = fetch('/api/subcategories/' + subcategoryId)
+                .then(res => res.json());
 
-                    let formName = document.getElementById('form-name');
-                    formName.value = product.name;
+            const fetchAllCategories = fetch('/api/categories')
+                .then(res => res.json());
 
-                    let formDescription = document.getElementById('form-description');
-                    formDescription.value = product.description;
+            Promise.all([fetchSubcategory, fetchAllCategories])
+                .then(([subcategory, categories]) => {
+                    thisSubcategoryData = subcategory;
 
+                    // Rellenar inputs
+                    document.getElementById('form-name').value = subcategory.name;
+                    document.getElementById('form-description').value = subcategory.description;
+
+                    // Rellenar select
+                    categoriesSelect.innerHTML =
+                        categories.map(cat =>
+                            `<option value="${cat.id}" ${cat.id == subcategory.category_id ? 'selected' : ''}>
+                    ${cat.name}
+                </option>`
+                        ).join('');
                 })
                 .catch(err => console.error('Error:', err));
-
 
 
             const form = document.getElementById('productForm');
@@ -73,9 +95,10 @@
                     return;
                 }
 
+
                 console.log(formData);
 
-                const response = await fetch(`/api/categories/${categoryId}`, {
+                const response = await fetch(`/api/subcategories/${subcategoryId}`, {
                     method: 'POST', // Usamos POST aquí
                     headers: {
                         'X-CSRF-TOKEN': formData.get('_token'),
@@ -88,7 +111,7 @@
                 console.log(data);
 
                 if (response.ok) {
-                    window.location.href = '/admin/categories';
+                    window.location.href = '/admin/subcategories';
                 } else {
                     alert('Error al actualizar: ' + (data.message || 'Verifica los datos.'));
                 }
@@ -96,6 +119,14 @@
                 loader.style.display = 'none';
                 form.style.display = 'block';
             });
+
+
+
+            /**
+             * 
+             * obtener categorias para poder cambiarla luego
+             * 
+             */
 
             const sendErrorMessage = (field) => {
 

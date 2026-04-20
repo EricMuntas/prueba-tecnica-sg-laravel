@@ -57,6 +57,15 @@ class AdminPageController extends Controller
         return view('admin-panel.category-edit', ['id' => $id, 'categories' => $categories]);
     }
 
+    public function subcategoriesEditIndex(int $id)
+    {
+        // Obtener categorias por si el user quiere hacer una subcategory
+        $categories = Category::all();
+
+        return view('admin-panel.subcategory-edit', ['id' => $id, 'categories' => $categories]);
+    }
+
+
 
 
     public function productCreateIndex()

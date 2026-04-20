@@ -15,14 +15,14 @@
 
             <div class="categories-container">
                 <label for="categories-select">Asignar categoría:</label>
-                <select id="categories-select" name="categories-id">
+                <select id="categories-select" name="category_id">
                     <option value="">Categoría...</option>
                 </select>
             </div>
 
             <div class="subcategories-container d-none">
                 <label for="subcategories-select">Asignar subcategoría:</label>
-                <select id="subcategories-select" name="subcategories-id">
+                <select id="subcategories-select" name="subcategory_id">
                     <option value="">Subcategoría...</option>
                 </select>
             </div>
@@ -58,6 +58,8 @@
                 <small id="photo-count-msg"></small>
                 <div id="photo-preview-container" class="d-flex gap-2 mt-2"></div>
             </div>
+
+            <p id="error-message-container"></p>
 
             <button type="submit">Crear nuevo producto</button>
         </form>
@@ -241,8 +243,37 @@
                 form.style.display = 'none';
 
                 const formData = new FormData(this);
-                formData.append('categories', JSON.stringify(assignedCategoriesId));
-                formData.append('subcategories', JSON.stringify(assignedSubcategoriesId));
+                formData.append('assigned_categories', JSON.stringify(assignedCategoriesId));
+                formData.append('assigned_subcategories', JSON.stringify(assignedSubcategoriesId));
+
+                if (formData.get('name').trim() == '') {
+                    sendErrorMessage('nombre');
+                    return;
+                }
+
+                if (formData.get('description').trim() == '') {
+                    sendErrorMessage('descripción');
+                    return;
+                }
+
+                if (assignedCategoriesId.length === 0) {
+                    sendErrorMessage('categoría');
+                    return;
+                }
+
+                if (formData.get('start_day').trim() == '') {
+                    sendErrorMessage('dia inicial');
+                    return;
+                }
+
+                if (formData.get('end_day').trim() == '') {
+                    sendErrorMessage('dia final');
+                    return;
+                }
+                if (formData.get('price').trim() == '') {
+                    sendErrorMessage('precio');
+                    return;
+                }
 
                 // Añadir cada foto individualmente como 'photos[]'
                 selectedFiles.forEach(file => formData.append('photos[]', file));
@@ -266,6 +297,17 @@
                     form.style.display = 'block';
                 }
             });
+
+            const sendErrorMessage = (field) => {
+
+                loader.style.display = 'none';
+                form.style.display = 'block';
+
+                const errorMessageContainer = document.getElementById('error-message-container');
+                const errorMessage = 'No puedes dejar el campo ' + field + ' vacío.';
+
+                errorMessageContainer.innerHTML = errorMessage;
+            }
         </script>
     </div>
 @endsection

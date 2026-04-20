@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -25,5 +26,11 @@ class ProductSeeder extends Seeder
             'name' => 'Pera',
             'description' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Labore sed saepe voluptatum enim nostrum tempora rerum amet, error soluta corporis provident repudiandae quia praesentium. Voluptatibus doloremque ex ipsam deserunt hic',
         ]);
+
+        $category = Category::first();
+
+        $product1->categories()->attach($category->id);
+        $product2->categories()->attach($category->id);
+        $product3->categories()->attach($category->id);
     }
 }

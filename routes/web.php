@@ -21,6 +21,7 @@ Route::get('/admin/subcategories', [AdminPageController::class, 'subcategoryInde
 Route::get('/admin/subcategories/create', [AdminPageController::class, 'categoryCreateIndex']); // apuntar al mismo sitio
 
 Route::get('/admin/categories/{id}', [AdminPageController::class, 'categoriesEditIndex']);
+Route::get('/admin/subcategories/{id}', [AdminPageController::class, 'subcategoriesEditIndex']);
 
 Route::get('/admin/products', [AdminPageController::class, 'productIndex']);
 Route::get('/admin/products/create', [AdminPageController::class, 'productCreateIndex']);
