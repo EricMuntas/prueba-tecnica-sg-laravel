@@ -2,14 +2,15 @@
 
 @section('content')
     <x-link url="/" text="Go to dashboard"></x-link>
+        <a href="/cart">
+        <button type="button">Ir a la cesta</button>
+
+    </a>
     <div id="products-container">
         <p>Cargando productos...</p>
         <x-loader></x-loader>
     </div>
-    <a href="/cart">
-        <button type="button">Ir a la cesta</button>
 
-    </a>
 
     <script>
         fetch('/api/products')
