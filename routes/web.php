@@ -7,9 +7,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [PageController::class, 'dashboard']);
 
 Route::get('/products', [PageController::class, 'productIndex']);
-
-
 Route::get('/products/{id}', [PageController::class, 'productShow']);
+
+Route::get('/cart', [PageController::class, 'cartIndex']);
 
 
 // ADMIN PANEL, add middleware

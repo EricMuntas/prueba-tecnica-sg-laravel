@@ -2,5 +2,7 @@
 
 
 @section('content')
-<p class="text-primary">dashboard</p>
+    <p class="text-primary">dashboard</p>
+    <a href="/order">Crear pedido</a>
+    <div id="calendar"></div>
 @endsection

@@ -8,7 +8,9 @@
         Productos
     </a>
 
-
+    <a class="nav-link" href="/login">
+        Acceder
+    </a>
     <a class="nav-link" href="/admin">
         Admin
     </a>

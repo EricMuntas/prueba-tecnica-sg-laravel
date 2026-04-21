@@ -22,4 +22,9 @@ class PageController extends Controller
     {
         return view('product-show', ['id' => $id]);
     }
+
+    public function cartIndex()
+    {
+        return view('shopping-cart');
+    }
 }
