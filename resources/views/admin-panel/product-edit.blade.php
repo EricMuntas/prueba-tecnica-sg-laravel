@@ -55,8 +55,13 @@
         </form>
 
         <div id="deleteBtnContainer"></div>
+        <div>
+            <button id="export-pdf-btn">
+                Exportar a PDF
+            </button>
+        </div>
         <x-link url="/admin/products/{{ $id }}/fees" text="Ver fees"></x-link>
-
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
         <script>
             const productId = @json($id);
             const deleteBtnContainer = document.getElementById('deleteBtnContainer');
@@ -114,7 +119,9 @@
 
                     // Precargar fotos existentes (photo_url es array de URLs)
                     if (Array.isArray(product.photo_url)) {
-                        existingPhotos = product.photo_url.map(url => ({ url }));
+                        existingPhotos = product.photo_url.map(url => ({
+                            url
+                        }));
                         renderPhotoPreviews();
                     }
                 })
@@ -210,9 +217,9 @@
             const photoCountMsg = document.getElementById('photo-count-msg');
             const MAX_PHOTOS = 3;
 
-            let selectedFiles = [];     // Archivos nuevos (File objects)
-            let existingPhotos = [];     // Fotos ya guardadas { url }
-            let deletedPhotoUrls = [];   // URLs de fotos existentes a eliminar
+            let selectedFiles = []; // Archivos nuevos (File objects)
+            let existingPhotos = []; // Fotos ya guardadas { url }
+            let deletedPhotoUrls = []; // URLs de fotos existentes a eliminar
 
             photoInput.addEventListener('change', function() {
                 const newFiles = Array.from(this.files);
@@ -337,6 +344,82 @@
                 document.getElementById('error-message-container').innerHTML =
                     'No puedes dejar el campo ' + field + ' vacío.';
             };
+
+            document.getElementById('export-pdf-btn').addEventListener('click', async () => {
+                const {
+                    jsPDF
+                } = window.jspdf;
+                const doc = new jsPDF();
+
+                const name = document.getElementById('form-name').value;
+                const description = document.getElementById('form-description').value;
+                const categories = [...addedCategoriesContainer.querySelectorAll('.addedCategory')]
+                    .map(el => el.textContent.replace('✕', '').trim()).join(', ');
+                const subcats = [...addedSubcategoriesContainer.querySelectorAll('.addedCategory')]
+                    .map(el => el.textContent.replace('✕', '').trim()).join(', ');
+
+                // Cabecera
+                doc.setFontSize(18);
+                doc.text('Ficha de producto', 14, 20);
+
+                // Campos
+                doc.setFontSize(11);
+                const fields = [
+                    ['ID', String(productId)],
+                    ['Nombre', name],
+                    ['Descripción', description],
+                    ['Categorías', categories || '—'],
+                    ['Subcategorías', subcats || '—'],
+                ];
+                let y = 35;
+                fields.forEach(([label, value]) => {
+                    doc.setFont(undefined, 'bold');
+                    doc.text(label + ':', 14, y);
+                    doc.setFont(undefined, 'normal');
+                    const lines = doc.splitTextToSize(value, 150);
+                    doc.text(lines, 55, y);
+                    y += 8 * lines.length;
+                });
+
+                // Fotos (si las hay)
+                if (existingPhotos.length > 0) {
+                    y += 4;
+                    doc.setFont(undefined, 'bold');
+                    doc.text('Fotos:', 14, y);
+                    y += 8;
+
+                    for (const photo of existingPhotos) {
+                        try {
+                            const img = await toBase64(photo.url);
+                            doc.addImage(img, 'JPEG', 14, y, 60, 60);
+                            y += 68;
+                            if (y > 260) {
+                                doc.addPage();
+                                y = 20;
+                            }
+                        } catch (_) {}
+                    }
+                }
+
+                doc.save(`producto_${productId}.pdf`);
+            });
+
+            // Helper: convierte URL de imagen a base64
+            function toBase64(url) {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.crossOrigin = 'anonymous';
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.naturalWidth;
+                        canvas.height = img.naturalHeight;
+                        canvas.getContext('2d').drawImage(img, 0, 0);
+                        resolve(canvas.toDataURL('image/jpeg'));
+                    };
+                    img.onerror = reject;
+                    img.src = url;
+                });
+            }
         </script>
 
     </div>
