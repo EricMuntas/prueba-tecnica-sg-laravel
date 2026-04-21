@@ -27,4 +27,10 @@ class PageController extends Controller
     {
         return view('shopping-cart');
     }
+
+    public function orderEdit(int $id)
+    {
+        return view('order-edit', ['orderId' => $id]);
+    }
 }
+

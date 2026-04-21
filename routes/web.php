@@ -19,6 +19,12 @@ Route::get('/products/{id}', [PageController::class, 'productShow']);
 
 Route::get('/cart', [PageController::class, 'cartIndex']);
 
+// Orders (web pages - require login)
+Route::middleware('auth')->group(function () {
+    Route::get('/orders/{id}', [PageController::class, 'orderEdit']);
+});
+
+
 
 // ADMIN PANEL
 Route::middleware(['auth', 'role:admin'])->group(function () {

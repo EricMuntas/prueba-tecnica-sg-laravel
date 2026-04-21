@@ -158,25 +158,33 @@
 
                     const cart = JSON.parse(localStorage.getItem('shoppingCart')) || [];
                     const totalCost = parseFloat(document.getElementById('total-price').textContent);
-
+    
                     const orderData = {
                         date: orderDate,
                         cost: totalCost,
-                        items: cart,
-                    };
+                        items: cart.map(item => ({
+                            product_id: parseInt(item.product_id),
+                            quantity:   parseInt(item.quantity),
+        })),
+    };
 
                     console.log('Pedido a enviar:', orderData);
 
-                    // fetch('/api/orders', {
-                    //     method: 'POST',
-                    //     headers: { 'Content-Type': 'application/json' },
-                    //     body: JSON.stringify(orderData),
-                    // })
-                    // .then(res => res.json())
-                    // .then(order => {
-                    //     localStorage.removeItem('shoppingCart');
-                    //     window.location.href = `/orders/${order.id}`;
-                    // });
+                    fetch('/api/orders', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type':     'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN':     document.querySelector('meta[name="csrf-token"]').content,
+                        },
+                        body: JSON.stringify(orderData),
+                    })
+                    .then(res => res.json())
+                    .then(order => {
+                        localStorage.removeItem('shoppingCart');
+                        window.location.href = `/`;
+                    })
+                    .catch(err => alert('Error al confirmar el pedido.'));
                 });
             })
             .catch(err => console.error('Error:', err));
