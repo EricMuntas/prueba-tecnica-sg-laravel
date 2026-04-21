@@ -1,113 +1,112 @@
 @extends('layouts.layout')
 
 @section('content')
-    <div>
-        <x-link url="/admin" text="Go to admin panel"></x-link>
-        <x-link url="/admin/products" text="go back"></x-link>
+<div class="container page-wrapper" style="max-width: 600px;">
+    <div class="d-flex align-items-center mb-4">
+        <a href="/admin/categories" class="btn btn-outline-secondary btn-sm me-3">← Volver</a>
+        <h1 class="page-title mb-0">Editar Categoría</h1>
+    </div>
 
-        <div id="products-container">
-            <p>Cargando producto...</p>
-        </div>
+    <div id="loader" class="text-center py-5" style="display: none;">
+        <div class="spinner"></div>
+        <p class="text-muted mt-2">Cargando...</p>
+    </div>
 
-        <div id="loader" style="display: none;">
-            <x-loader></x-loader>
-        </div>
+    <div id="products-container" class="text-center text-muted mb-3 d-none">
+        <p>Cargando producto...</p>
+    </div>
 
+    <div class="card p-4 mb-4">
         <form id="productForm">
             @csrf
-            <input id="form-name" type="text" name="name" placeholder="Nombre" />
-            <input id="form-description" type="text" name="description" placeholder="Descripción" />
+            <div class="mb-3">
+                <label class="form-label">Nombre</label>
+                <input id="form-name" class="form-control" type="text" name="name" placeholder="Cargando..." required />
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label">Descripción</label>
+                <input id="form-description" class="form-control" type="text" name="description" placeholder="Cargando..." required />
+            </div>
 
-            <p id="error-message-container"></p>
+            <p id="error-message-container" class="text-danger mb-3 fw-semibold" style="font-size:0.9rem;"></p>
 
-            <button type="submit">Actualizar</button>
-
+            <div class="text-end">
+                <button type="submit" class="btn btn-primary px-4">Actualizar</button>
+            </div>
         </form>
+    </div>
 
-        <div id="deleteBtnContainer"></div>
+    <div id="deleteBtnContainer" class="text-end"></div>
 
+    <script>
+        const categoryId = @json($id);
+        const deleteBtnContainer = document.getElementById('deleteBtnContainer');
+        const loader = document.getElementById('loader');
 
-        <script>
-            const categoryId = @json($id);
+        deleteBtnContainer.innerHTML = `<button class="btn btn-outline-danger" onclick="deleteItem('category', ${categoryId})">🗑️ Borrar Categoría</button>`;
 
-            const deleteBtnContainer = document.getElementById('deleteBtnContainer');
+        // Cargar datos
+        fetch('/api/categories/' + categoryId)
+            .then(res => res.json())
+            .then(product => {
+                let formName = document.getElementById('form-name');
+                formName.value = product.name;
 
-            deleteBtnContainer.innerHTML = ` <button onclick="deleteItem('category', ${categoryId})">Borrar</button>`;
+                let formDescription = document.getElementById('form-description');
+                formDescription.value = product.description;
+            })
+            .catch(err => console.error('Error:', err));
 
+        const form = document.getElementById('productForm');
 
-            // get data para presvisualizar los datos
-            fetch('/api/categories/' + categoryId)
-                .then(res => res.json())
-                .then(product => {
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
 
-                    let formName = document.getElementById('form-name');
-                    formName.value = product.name;
+            loader.style.display = 'block';
+            form.style.display = 'none';
 
-                    let formDescription = document.getElementById('form-description');
-                    formDescription.value = product.description;
+            const formData = new FormData(this);
+            formData.append('_method', 'PUT');
 
-                })
-                .catch(err => console.error('Error:', err));
+            if (formData.get('name').trim() == '') {
+                sendErrorMessage('nombre');
+                return;
+            }
 
+            if (formData.get('description').trim() == '') {
+                sendErrorMessage('descripción');
+                return;
+            }
 
-
-            const form = document.getElementById('productForm');
-
-            form.addEventListener('submit', async function(e) {
-                e.preventDefault();
-
-                // Mostrar loader, ocultar form
-                loader.style.display = 'block';
-                form.style.display = 'none';
-
-                const formData = new FormData(this);
-                formData.append('_method', 'PUT'); // Laravel requiere POST + _method=PUT para leer FormData
-
-                if (formData.get('name').trim() == '') {
-                    sendErrorMessage('nombre');
-                    return;
-                }
-
-                if (formData.get('description').trim() == '') {
-                    sendErrorMessage('descripción');
-                    return;
-                }
-
-                console.log(formData);
-
-                const response = await fetch(`/api/categories/${categoryId}`, {
-                    method: 'POST', // Usamos POST aquí
-                    headers: {
-                        'X-CSRF-TOKEN': formData.get('_token'),
-                        'Accept': 'application/json',
-                    },
-                    body: formData,
-                });
-
-                const data = await response.json();
-                console.log(data);
-
-                if (response.ok) {
-                    window.location.href = '/admin/categories';
-                } else {
-                    alert('Error al actualizar: ' + (data.message || 'Verifica los datos.'));
-                }
-
-                loader.style.display = 'none';
-                form.style.display = 'block';
+            const response = await fetch(`/api/categories/${categoryId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': formData.get('_token'),
+                    'Accept': 'application/json',
+                },
+                body: formData,
             });
 
-            const sendErrorMessage = (field) => {
+            const data = await response.json();
 
-                loader.style.display = 'none';
-                form.style.display = 'block';
-
-                const errorMessageContainer = document.getElementById('error-message-container');
-                const errorMessage = 'No puedes dejar el campo ' + field + ' vacío.';
-
-                errorMessageContainer.innerHTML = errorMessage;
+            if (response.ok) {
+                window.location.href = '/admin/categories';
+            } else {
+                alert('Error al actualizar: ' + (data.message || 'Verifica los datos.'));
             }
-        </script>
 
-    </div>
+            loader.style.display = 'none';
+            form.style.display = 'block';
+        });
+
+        const sendErrorMessage = (field) => {
+            loader.style.display = 'none';
+            form.style.display = 'block';
+            const errorMessageContainer = document.getElementById('error-message-container');
+            const errorMessage = 'No puedes dejar el campo ' + field + ' vacío.';
+            errorMessageContainer.innerHTML = errorMessage;
+        }
+    </script>
+</div>
 @endsection

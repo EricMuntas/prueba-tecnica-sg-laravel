@@ -30,9 +30,22 @@ class FeeController extends Controller
             'price' => 'required|numeric',
         ]);
 
-        if (Fee::where('start_day', '<=', $validated['start_day'])->where('end_day', '>=', $validated['start_day'])) {
-            return response()->json(['message' => 'Ya existe una tarifa en esta fecha para este producto.'], 403);
-        }
+       if (
+    Fee::where('product_id', $validated['product_id'])
+        ->where(function ($query) use ($validated) {
+            $query->whereBetween('start_day', [$validated['start_day'], $validated['end_day']])
+                  ->orWhereBetween('end_day', [$validated['start_day'], $validated['end_day']])
+                  ->orWhere(function ($q) use ($validated) {
+                      $q->where('start_day', '<=', $validated['start_day'])
+                        ->where('end_day', '>=', $validated['end_day']);
+                  });
+        })
+        ->exists()
+) {
+    return response()->json([
+        'message' => 'Ya existe una tarifa en ese rango de fechas para este producto.'
+    ], 403);
+}
 
         $fee = Fee::create([
             'product_id' => $validated['product_id'],

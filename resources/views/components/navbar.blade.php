@@ -1,29 +1,25 @@
-<div class="d-flex justify-content-around align-items-center bg-primary w-100 gap-2" style="height: 96px;">
-    <a class="nav-link text-white" href="/">
-        Dashboard
-    </a>
+<nav class="site-navbar">
+    <a class="brand" href="/">🛍️ <span>Crear</span>Pedidos</a>
 
-    <a class="nav-link text-white" href="/products">
-        Productos
-    </a>
+    <a class="nav-link" href="/products">Productos</a>
 
-
-@if(Auth::check() && Auth::user()->role === 'admin')
-    <a class="nav-link text-white" href="/admin">
-        Admin
-    </a>
+    @if(Auth::check() && Auth::user()->role === 'admin')
+        <a class="nav-link" href="/admin">Panel de Administración</a>
     @endif
 
-        @auth
-   <div class="nav-link text-white">
-        <form method="POST" action="/logout" class="d-inline">
+    @auth
+        <div class="nav-user">
+            <span>👤 {{ Auth::user()->name }}</span>
+            @if(Auth::user()->role === 'admin')
+                <span class="badge bg-warning text-dark">Admin</span>
+            @endif
+        </div>
+        <form method="POST" action="/logout">
             @csrf
-            <button type="submit" class="btn btn-outline-light btn-sm">Cerrar sesión</button>
+            <button type="submit" class="btn-nav-logout" style="color: white;">Salir</button>
         </form>
-    </div>
-       
     @else
-        <a class="nav-link text-white" href="/login">Acceder</a>
-        <a class="nav-link text-white" href="/register">Registrarse</a>
+        <a class="nav-link" href="/login">Acceder</a>
+        <a class="nav-link" href="/register">Registrarse</a>
     @endauth
-</div>
+</nav>

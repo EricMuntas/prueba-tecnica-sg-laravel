@@ -1,132 +1,137 @@
 @extends('layouts.layout')
 
 @section('content')
-    <div>
-        <x-link url="/admin" text="Go to admin panel"></x-link>
-        <x-link url="/admin/products" text="go back"></x-link>
+<div class="container page-wrapper">
+    <div class="d-flex align-items-center mb-4">
+        <a href="/admin/products" class="btn btn-outline-secondary btn-sm me-3">← Volver a Productos</a>
+        <h1 class="page-title mb-0">Gestión de Tarifas</h1>
+    </div>
 
-        <div id="loader" style="display: none;">
-            <x-loader></x-loader>
+    <div id="loader" class="text-center py-5" style="display: none;">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="row">
+        <!-- FORM NUEVA TARIFA -->
+        <div class="col-lg-4 mb-4">
+            <div class="card p-4 shadow-sm h-100">
+                <h5 class="fw-bold mb-3 text-primary-dark">Crear nueva tarifa</h5>
+                <form id="newFeeForm">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="price" class="form-label">Precio (€):</label>
+                        <input type="number" name="price" min="0" step="0.01" class="form-control" placeholder="0.00" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="start_day" class="form-label">Desde:</label>
+                        <input type="date" name="start_day" class="form-control" required />
+                    </div>
+                    <div class="mb-4">
+                        <label for="end_day" class="form-label">Hasta:</label>
+                        <input type="date" name="end_day" class="form-control" required />
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Crear Tarifa</button>
+                </form>
+            </div>
         </div>
 
-        <form id="newFeeForm">
-            <div>
-                <span>Tarifa inicial:</span>
-                <div>
-                    <label for="start_day">Dia inicial:</label>
-                    <input type="date" name="start_day" />
-                </div>
-                <div>
-                    <label for="end_day">Dia final:</label>
-                    <input type="date" name="end_day" />
-                </div>
-                <div>
-                    <label for="price">Precio:</label>
-                    <input type="number" name="price" min="0" placeholder="0" />
+        <!-- LISTA DE TARIFAS -->
+        <div class="col-lg-8">
+            <div class="card p-0 overflow-hidden shadow-sm">
+                <div class="table-responsive">
+                    <table class="table mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Vigencia</th>
+                                <th>Precio</th>
+                                <th>Estado</th>
+                                <th class="text-end pe-4" style="width: 100px;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="feesTable">
+                            <tr><td colspan="4" class="text-center py-4 text-muted">Cargando tarifas...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            <button type="submit">Crear</button>
-        </form>
-        <br>
-        <div id="feesTable">
-
+            
+            <div id="deleteBtnContainer" class="mt-3 text-end"></div>
         </div>
-        <div id="deleteBtnContainer"></div>
+    </div>
 
+    <script>
+        const productId = @json($id);
+        const feesTable = document.getElementById('feesTable');
+        const deleteBtnContainer = document.getElementById('deleteBtnContainer');
+        const loader = document.getElementById('loader');
 
-        <script>
-            const productId = @json($id);
-            const feesTable = document.getElementById('feesTable');
-            const deleteBtnContainer = document.getElementById('deleteBtnContainer');
+        deleteBtnContainer.innerHTML = `<button class="btn btn-outline-danger btn-sm" onclick="deleteItem('product', ${productId})">🗑️ Borrar todo el producto</button>`;
 
-            deleteBtnContainer.innerHTML = `<button onclick="deleteItem('product', ${productId})">Borrar</button>`;
+        fetch('/api/products/' + productId)
+            .then(res => res.json())
+            .then(product => {
+                const dateString = new Date().toISOString().split('T')[0];
 
-            // get data para presvisualizar los datos
-            fetch('/api/products/' + productId)
-                .then(res => res.json())
-                .then(product => {
-                    console.log(product);
-                    const dateString = new Date().toISOString().split('T')[0]; // Obtener 'YYYY-MM-DD'
-
-                    feesTable.innerHTML = product.fees.map(fee => {
-                        let isVigente = dateString >= fee.start_day && dateString <= fee.end_day;
-                        let badgeStatus = isVigente ? '<span style="color: green;">Vigente</span>' : '<span style="color: red;">Caducado</span>';
-
-                        return `
-                <div id="fee${fee.id}">
-                    <span>Fee ${fee.product_id}:</span>
-                   <span>${fee.start_day}</span>
-                   <span>${fee.end_day}</span>
-                    <p>${fee.price}€</p>
-                    <div class="badge" data-id="${fee.id}">
-                            ${badgeStatus}
-                    </div>
-                    <a href="/admin/fees/${fee.id}">
-                          
-         <svg class="editBtn" data-id="${fee.id}" viewBox="0 0 24 24">
-                     <g>
-                         <path fill="none" d="M0 0h24v24H0z"/>
-                         <path d="M15.728 9.686l-1.414-1.414L5 17.586V19h1.414l9.314-9.314zm1.414-1.414l1.414-1.414-1.414-1.414-1.414 1.414 1.414 1.414zM7.242 21H3v-4.243L16.435 3.322a1 1 0 0 1 1.414 0l2.829 2.829a1 1 0 0 1 0 1.414L7.243 21z"/>
-                     </g>
-                 </svg></a>
-                </div>
-            `;
-                    }).join('');
-
-                    let badgeDiv = document.getElementById(`badge${product.fee}`)
-
-                    // document.querySelectorAll('.editBtn').forEach(btn => {
-                    //     btn.addEventListener('click', function() {
-                    //         const feeId = this.dataset.id;
-                    //         console.log("Editar fee:", feeId);
-                    //         let feeContainer = document.getElementById(`fee${feeId}`);
-                    //         feeContainer.classList.add('d-none');
-                    //     });
-                    // });
-                })
-                .catch(err => console.error('Error:', err));
-
-
-
-            const form = document.getElementById('newFeeForm');
-
-            form.addEventListener('submit', async function(e) {
-                e.preventDefault();
-
-                // Mostrar loader, ocultar form
-                loader.style.display = 'block';
-                form.style.display = 'none';
-
-                const formData = new FormData(this);
-                formData.append('product_id', productId);
-
-                console.log(formData);
-
-                const response = await fetch(`/api/fees/`, {
-                    method: 'POST', // Usamos POST aquí
-                    headers: {
-                        'X-CSRF-TOKEN': formData.get('_token'),
-                        'Accept': 'application/json',
-                    },
-                    body: formData,
-                });
-
-                const data = await response.json();
-                console.log(data);
-
-                if (response.ok) {
-                    alert('Tarifa creada.');
-                    window.location.href = `/admin/products/${productId}`;
-                } else {
-                    alert('Error al actualizar: ' + (data.message || 'Verifica los datos.'));
+                if(!product.fees || product.fees.length === 0) {
+                    feesTable.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-muted">No hay tarifas para este producto.</td></tr>';
+                    return;
                 }
 
-                loader.style.display = 'none';
-                form.style.display = 'block';
+                feesTable.innerHTML = product.fees.map(fee => {
+                    let isVigente = dateString >= fee.start_day && dateString <= fee.end_day;
+                    let badgeStatus = isVigente 
+                        ? '<span class="badge bg-success">Vigente</span>' 
+                        : '<span class="badge bg-danger">Caducado</span>';
+
+                    return `
+                    <tr id="fee${fee.id}">
+                        <td class="ps-4">
+                            <div class="text-muted" style="font-size:0.85rem;">
+                                ${fee.start_day} <i class="text-primary px-1">→</i> ${fee.end_day}
+                            </div>
+                        </td>
+                        <td class="fw-bold">${parseFloat(fee.price).toFixed(2)}€</td>
+                        <td>${badgeStatus}</td>
+                        <td class="text-end pe-4">
+                            <a href="/admin/fees/${fee.id}" class="btn btn-sm btn-outline-primary rounded-pill px-3">Editar</a>
+                        </td>
+                    </tr>
+                `;
+                }).join('');
+            })
+            .catch(err => console.error('Error:', err));
+
+        const form = document.getElementById('newFeeForm');
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            loader.style.display = 'block';
+            form.style.display = 'none';
+
+            const formData = new FormData(this);
+            formData.append('product_id', productId);
+
+            const response = await fetch(`/api/fees/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': formData.get('_token'),
+                    'Accept': 'application/json',
+                },
+                body: formData,
             });
 
+            const data = await response.json();
 
-        </script>
-
-    </div>
+            if (response.ok) {
+                alert('Tarifa creada.');
+                window.location.reload();
+            } else {
+                alert('Error al crear: ' + (data.message || 'Verifica los datos.'));
+                loader.style.display = 'none';
+                form.style.display = 'block';
+            }
+        });
+    </script>
+</div>
 @endsection

@@ -1,13 +1,15 @@
 @extends('layouts.layout')
 
 @section('content')
-<div class="d-flex justify-content-center align-items-center" style="min-height: calc(100vh - 96px);">
-    <div class="card shadow-sm" style="width: 100%; max-width: 420px;">
-        <div class="card-body p-4">
-            <h2 class="card-title mb-4 text-center fw-bold">Iniciar sesión</h2>
-
+<div class="auth-wrapper">
+    <div class="auth-card card">
+        <div class="auth-header">
+            <h1>Iniciar sesión</h1>
+            <p>Accede a tu cuenta para continuar</p>
+        </div>
+        <div class="auth-body">
             @if ($errors->any())
-                <div class="alert alert-danger">
+                <div class="alert alert-danger mb-3">
                     <ul class="mb-0">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
@@ -21,15 +23,9 @@
 
                 <div class="mb-3">
                     <label for="email" class="form-label">Correo electrónico</label>
-                    <input
-                        id="email"
-                        type="email"
-                        name="email"
-                        value="{{ old('email') }}"
+                    <input id="email" type="email" name="email" value="{{ old('email') }}"
                         class="form-control @error('email') is-invalid @enderror"
-                        required
-                        autofocus
-                    >
+                        required autofocus placeholder="tu@email.com">
                     @error('email')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -37,31 +33,27 @@
 
                 <div class="mb-3">
                     <label for="password" class="form-label">Contraseña</label>
-                    <input
-                        id="password"
-                        type="password"
-                        name="password"
+                    <input id="password" type="password" name="password"
                         class="form-control @error('password') is-invalid @enderror"
-                        required
-                    >
+                        required placeholder="••••••••">
                     @error('password')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
 
-                <div class="mb-3 form-check">
+                <div class="mb-4 form-check">
                     <input type="checkbox" class="form-check-input" id="remember" name="remember">
-                    <label class="form-check-label" for="remember">Recordarme</label>
+                    <label class="form-check-label text-muted" for="remember">Recordarme</label>
                 </div>
 
                 <div class="d-grid mb-3">
-                    <button type="submit" class="btn btn-primary">Entrar</button>
+                    <button type="submit" class="btn btn-primary btn-lg">Entrar →</button>
                 </div>
             </form>
 
-            <p class="text-center mb-0">
+            <p class="text-center mb-0 text-muted" style="font-size:.88rem">
                 ¿No tienes cuenta?
-                <a href="/register">Regístrate</a>
+                <a href="/register" class="fw-semibold">Regístrate</a>
             </p>
         </div>
     </div>
